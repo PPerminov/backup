@@ -64,17 +64,9 @@ def database(filename):
 
 
 def database_preparation(db_cur):
-    db_cur.execute('CREATE TABLE IF NOT EXISTS files (id INTeger PRIMARY KEY autoincrement, name TEXT NOT NULL, path TEXT, link_path TEXT, hash VARCHAR NOT NULL, cdate DATETIME not null, mdate DATETIME not null, size BIGINT UNSIGNED)')
+    db_cur.execute('CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, path TEXT, link_path TEXT, link_type BOOLEAN, hash VARCHAR NOT NULL, cdate DATETIME not null, mdate DATETIME not null, size BIGINT UNSIGNED)')
     db_cur.execute(
-        'CREATE INDEX IF NOT EXISTS files_index ON files (hash, name)')
-
-
-def database_initial_insertion(db_cur, data):
-    # db_cur.execute('INSERT INTO files (name,path,hash,cdate,mdate,size) values ("fdsf","fdsfsd","null",4564,48,45)')
-    db_cur.executemany(
-        'INSERT INTO files (name,path,link_path,hash,cdate,mdate,size) values (?,?,?,?,?,?,?)', data)
-    db_cur.commit()
-    # db_cur.close()
+        'CREATE INDEX IF NOT EXISTS files_index ON files (hash, name, cdate)')
 
 
 def file_stat(file_list, db, hash_needed=False):
@@ -109,4 +101,4 @@ db = database('bb.db')
 database_preparation(db)
 
 
-file_stat(filelist(test_folder), db, False)
+file_stat(filelist(test_folder), db, True)
