@@ -99,4 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+#own
 temp/
+database/
+backup/
+conf/
+*ipynb*
