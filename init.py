@@ -1,13 +1,17 @@
 def main():
     arguments=params()
     if arguments.type == "server":
-        server()
+        server()()
     else:
         client()
 
 def server():
-    import src\/server\/server as server_module
-    print(dir(server_module))
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('server_module','./src/server/server.py')
+    data = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(data)
+    return data.main
+
 
 def params():
     from argparse import ArgumentParser
