@@ -96,9 +96,9 @@ def file_stat(file_list, db, hash_needed=False):
         'INSERT INTO files (name,path,link_path,hash,cdate,mdate,size) values (?,?,?,?,?,?,?)', return_list)
     db.commit()
 
-
-db = database('bb.db')
-database_preparation(db)
-
-
-file_stat(filelist(test_folder), db, True)
+#
+# db = database('bb.db')
+# database_preparation(db)
+#
+#
+# file_stat(filelist(test_folder), db, True)

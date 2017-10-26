@@ -15,24 +15,21 @@ def variables():
 
 def main():
     import sys
+    import importlib.util
     arguments = params()
     varys = variables()
     setup(varys)
     if arguments.type == "server":
-        server()()
+        spec = importlib.util.spec_from_file_location(
+            'module', varys['server'] + '/server.py')
     elif arguments.type == "client":
-        client()
+        spec = importlib.util.spec_from_file_location(
+            'module', varys['client'] + '/client.py')
     else:
         sys.exit()
-
-
-def server():
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        'server_module', './src/server/server.py')
     data = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(data)
-    return data.main
+    data.main()
 
 
 def params():
