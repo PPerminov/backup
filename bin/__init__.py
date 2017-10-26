@@ -2,7 +2,7 @@ def variables():
     from os.path import abspath as path
     from os.path import dirname
     root = dirname(path(__file__))
-    server = path(root + "/server")
+    server = path(root + "/server.py")
     client = path(root + "/client")
     temp = path(root + "/../temp")
     conf = path(root + "/../conf")
@@ -19,17 +19,20 @@ def main():
     arguments = params()
     varys = variables()
     setup(varys)
+    d='server'
     if arguments.type == "server":
-        spec = importlib.util.spec_from_file_location(
-            'module', varys['server'] + '/server.py')
+        program = __import__(d)
+        # spec = importlib.util.spec_from_file_location(
+        #     'module', varys['server'] + '/server.py')
     elif arguments.type == "client":
-        spec = importlib.util.spec_from_file_location(
-            'module', varys['client'] + '/client.py')
+        import varys as program
+        # spec = importlib.util.spec_from_file_location(
+        #     'module', varys['client'] + '/client.py')
     else:
         sys.exit()
-    data = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(data)
-    data.main()
+    # data = importlib.util.module_from_spec(spec)
+    # spec.loader.exec_module(data)
+    program.main()
 
 
 def params():

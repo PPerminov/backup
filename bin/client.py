@@ -9,7 +9,9 @@ def options_parser():
     return args
 
 
-test_folder = options_parser().folder
+# test_folder = options_parser().folder
+
+
 
 
 def sender(file, connection):
