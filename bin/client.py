@@ -9,11 +9,6 @@ def options_parser():
     return args
 
 
-# test_folder = options_parser().folder
-
-
-
-
 def sender(file, connection):
     with open(file, 'rb') as stream:
         while True:
@@ -33,15 +28,14 @@ def sender(file, connection):
 def connector(address):
     from socket import socket
     connection = socket()
-    connection.connect((address, 5689))
+    connection.connect((address, 6981))
     return connection
 
 
 def filelist(folder):
     from os import walk, path
-    folder = path.abspath(folder)
     file_list = list()
-    for root, subdirs, file_name in walk(folder):
+    for root, subdirs, file_name in walk(path.abspath(folder)):
         if file_name:
             for fn in file_name:
                 current_object = [root, fn]
@@ -65,9 +59,10 @@ def database(filename):
         return None
 
 
-def database_preparation(db_cur):
-    db_cur.execute('CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, path TEXT, link_path TEXT, link_type BOOLEAN, hash VARCHAR NOT NULL, cdate DATETIME not null, mdate DATETIME not null, size BIGINT UNSIGNED)')
-    db_cur.execute(
+def database_preparation(database):
+    database.execute(
+        'CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, path TEXT, link_path TEXT, link_type BOOLEAN, hash VARCHAR NOT NULL, cdate DATETIME not null, mdate DATETIME not null, size BIGINT UNSIGNED)')
+    database.execute(
         'CREATE INDEX IF NOT EXISTS files_index ON files (hash, name, cdate)')
 
 
@@ -75,32 +70,48 @@ def file_stat(file_list, db, hash_needed=False):
     from os import stat
     from os.path import islink, realpath
     return_list = list()
+    links_list = list()
+    filename_list = list()
+
+    def statter(path, name, full_path):
+        # full_path = path + '/' + name
+        current_stat = stat(full_path)
+        if hash_needed == True:
+            sha_summ = hasher(full_path)
+        else:
+            sha_summ = ""
+        data = [name, path, sha_summ, current_stat.st_ctime,
+                current_stat.st_mtime, current_stat.st_size]
+        return data
+
     for item in file_list:
         path = item[0]
         name = item[1]
         full_path = path + '/' + name
         if islink(full_path):
-            link_path = realpath(full_path)
-        else:
-            link_path = "null"
-        try:
-            current_stat = stat(full_path)
-            if hash_needed == True:
-                sha_summ = hasher(full_path)
-            else:
-                sha_summ = "null"
-            data = [name, path, link_path, sha_summ, current_stat.st_ctime,
-                    current_stat.st_mtime, current_stat.st_size]
-            return_list.append(data)
-        except:
+            links_list.append([full_path, realpath(full_path)])
             continue
-    db.executemany(
-        'INSERT INTO files (name,path,link_path,hash,cdate,mdate,size) values (?,?,?,?,?,?,?)', return_list)
-    db.commit()
+        else:
+            return_list.append(statter(name,path,full_path))
+            filename_list.append(full_path)
+    for link in links_list:
+        print(link)
 
-#
-# db = database('bb.db')
-# database_preparation(db)
-#
-#
-# file_stat(filelist(test_folder), db, True)
+    # print(filename_list)
+    # db.executemany(
+    #     'INSERT INTO files (name,path,link_path,hash,cdate,mdate,size) values (?,?,?,?,?,?,?)', return_list)
+    # db.commit()
+
+
+def test_generator(longitude):
+    string = ''
+    for _ in range(longitude + 1):
+        string += "a"
+    return string
+
+
+def main():
+    test_folder = "../"
+    db = database('bb.db')
+    database_preparation(db)
+    file_stat(filelist(test_folder), db, True)
