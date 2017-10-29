@@ -89,7 +89,7 @@ def file_stat(file_list, db, hash_needed=False):
         name = item[1]
         full_path = path + '/' + name
         if islink(full_path):
-            links_list.append([full_path, realpath(full_path)])
+            links_list.append({'link_path':full_path, 'real_path' : realpath(full_path)})
             continue
         else:
             return_list.append(statter(name,path,full_path))

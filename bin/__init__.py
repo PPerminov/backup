@@ -18,7 +18,7 @@ def main():
     try:
         program = __import__(arguments.type)
     except ImportError:
-        print('Bad type value. Needed server or client')
+        print('Bad \'--type\' value. Needed server or client')
         exit(89)
     program.main()
 
@@ -26,7 +26,7 @@ def main():
 def params():
     from argparse import ArgumentParser
     parser = ArgumentParser(description="Now we will PARSE!!!1")
-    parser.add_argument('-t', '--type', action='store')
+    parser.add_argument('--type', action='store')
     return parser.parse_args()
 
 
