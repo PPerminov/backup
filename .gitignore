@@ -104,5 +104,5 @@ ENV/
 temp/
 database/
 backup/
-conf/
+#conf/
 *ipynb*

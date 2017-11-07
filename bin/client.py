@@ -61,9 +61,9 @@ def database(filename):
 
 def database_preparation(database):
     database.execute(
-        'CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, path TEXT, link_path TEXT, link_type BOOLEAN, hash VARCHAR NOT NULL, cdate DATETIME not null, mdate DATETIME not null, size BIGINT UNSIGNED)')
+        'CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, path TEXT NOT NULL, hash VARCHAR NOT NULL, cdate DATETIME not null, mdate DATETIME not null, size BIGINT UNSIGNED)')
     database.execute(
-        'CREATE INDEX IF NOT EXISTS files_index ON files (hash, name, cdate)')
+        'CREATE INDEX IF NOT EXISTS files_index ON files (hash, name, cdate,size)')
 
 
 def file_stat(file_list, db, hash_needed=False):
@@ -89,19 +89,20 @@ def file_stat(file_list, db, hash_needed=False):
         name = item[1]
         full_path = path + '/' + name
         if islink(full_path):
-            links_list.append({'link_path':full_path, 'real_path' : realpath(full_path)})
+            # links_list.append(
+            #     {'link_path': full_path, 'real_path': realpath(full_path)}
+            #     )
             continue
         else:
-            return_list.append(statter(name,path,full_path))
-            filename_list.append(full_path)
-    for link in links_list:
-        print(link)
+            return_list.append(statter(name, path, full_path))
+    return return_list
+            # filename_list.append(full_path)
+    # for link in links_list:
+    #     print(link)
 
-    # print(filename_list)
-    # db.executemany(
-    #     'INSERT INTO files (name,path,link_path,hash,cdate,mdate,size) values (?,?,?,?,?,?,?)', return_list)
-    # db.commit()
 
+
+file_stat
 
 def test_generator(longitude):
     string = ''
